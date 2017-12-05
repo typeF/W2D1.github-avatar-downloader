@@ -2,6 +2,7 @@ var request = require('request');
 var fs = require('fs');
 var dotenv = require('dotenv').config();
 var path = "/avatars";
+
 var gitHubOptions = {
     url: "https://api.github.com/repos/",
     json: true,
@@ -13,17 +14,25 @@ var gitHubOptions = {
 
 function downloadEngine (err, response, body){
   console.log('Welcome to the GitHub Avatar Downloader');
+
   if (err) {
   console.log("Errors:", err);
   }
 
-  if (body){
+  if (body["message"] !== "Not Found"){
     body.forEach(function (user){
     downloadImageByURL(user.avatar_url, "avatars/" + user.login + ".jpg");
     });
+    console.log("Downloads completed into /avatars");
   }
 
-  console.log("Downloads completed into /avatars");
+  else {
+    console.log("--------ERROR--------");
+    console.log("Invalid user/repo name provided.");
+    console.log("Please input check again.");
+    return false;
+  }
+
 }
 
 function downloadImageByURL(url, filePath){
@@ -37,14 +46,26 @@ function downloadImageByURL(url, filePath){
 function errorCheck(owner, repo, extraArgument){
   // Checks if there is a 5th argument
   if (extraArgument !== undefined){
+    console.log("--------ERROR--------")
     console.log("Too many arguments");
     console.log("Usage: node download_avatars.js <owner> <repo>");
     return false;
   }
   // Checks that owner and repo argument provided
   if (owner === undefined || repo === undefined) {
+    console.log("--------ERROR--------");
     console.log("Owner and/or Repo name was not provided");
     console.log("Usage: node download_avatars.js <owner> <repo>");
+    return false;
+  }
+  if (process.env.GITOKEN === undefined){
+    console.log("--------ERROR--------");
+    console.log(".env File is missing.");
+    return false;
+  }
+  if (process.env.GITOKEN.length !== 40){
+    console.log("--------ERROR--------")
+    console.log(".env token is not valid. Please check again.");
     return false;
   }
 
