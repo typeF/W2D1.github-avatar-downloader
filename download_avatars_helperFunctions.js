@@ -1,51 +1,23 @@
 var request = require('request');
 var fs = require('fs');
 var dotenv = require('dotenv').config();
+// Download folder path
 var path = "avatars/";
 
 var gitHubOptions = {
-    url: "https://api.github.com/repos/",
-    json: true,
-    headers: {
-      'User-Agent': 'request',
-      'Authorization': 'token ' + process.env.GITOKEN
-    }
-}
-
-function downloadEngine (err, response, body){
-  console.log('Welcome to the GitHub Avatar Downloader');
-  if (err) {
-  console.log("Errors:", err);
+  url: "https://api.github.com/repos/",
+  json: true,
+  headers: {
+    'User-Agent': 'request',
+    'Authorization': 'token ' + process.env.GITOKEN
   }
+};
 
-  if (body["message"] !== "Not Found"){
-    body.forEach(function (user){
-    downloadImageByURL(user.avatar_url, path + user.login + ".jpg");
-    });
-    console.log("Downloads completed into /" + path);
-  }
-
-  else {
-    console.log("--------ERROR--------");
-    console.log("Invalid user/repo name provided.");
-    console.log("Please input check again.");
-    return false;
-  }
-
-}
-
-function downloadImageByURL(url, filePath){
-  request(url)
-  .on('error', function(err){
-    throw err;
-  })
-  .pipe(fs.createWriteStream(filePath));
-}
-
+// Error Checking Function
 function errorCheck(owner, repo, extraArgument){
   // Checks if there is a 5th argument
   if (extraArgument !== undefined){
-    console.log("--------ERROR--------")
+    console.log("--------ERROR--------");
     console.log("Too many arguments");
     console.log("Usage: node download_avatars.js <owner> <repo>");
     return false;
@@ -57,25 +29,54 @@ function errorCheck(owner, repo, extraArgument){
     console.log("Usage: node download_avatars.js <owner> <repo>");
     return false;
   }
+  // Checks if token file in .env is present/valid
   if (process.env.GITOKEN === undefined){
     console.log("--------ERROR--------");
     console.log(".env File is missing.");
     return false;
   }
   if (process.env.GITOKEN.length !== 40){
-    console.log("--------ERROR--------")
+    console.log("--------ERROR--------");
     console.log(".env token is not valid. Please check again.");
     return false;
   }
+  // Checks if folder exists
   if (fs.existsSync("./" + path) === false){
-    console.log("--------ERROR--------")
+    console.log("--------ERROR--------");
     console.log("Save folder " + path + " does not exist");
     return false;
-  }
-  else {
+  } else {
     return true;
   }
+}
 
+// Downloads images from specified url to path
+function downloadImageByURL(url, filePath){
+  request(url)
+    .on('error', function(err){
+      throw err;
+    })
+    .pipe(fs.createWriteStream(filePath));
+}
+
+// Provides urls for each user in github repo to downloadImageByURL function
+function downloadEngine (err, response, body){
+  console.log('Welcome to the GitHub Avatar Downloader');
+  if (err) {
+    console.log("Errors:", err);
+  }
+
+  if (body["message"] !== "Not Found"){
+    body.forEach(function (user){
+      downloadImageByURL(user.avatar_url, path + user.login + ".jpg");
+    });
+    console.log("Downloads completed into /" + path);
+  } else {
+    console.log("--------ERROR--------");
+    console.log("Invalid user/repo name provided.");
+    console.log("Please input check again.");
+    return false;
+  }
 }
 
 module.exports.gitHubOptions = gitHubOptions;
