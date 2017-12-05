@@ -51,14 +51,19 @@ function errorCheck(owner, repo, extraArgument){
 }
 
 // Downloads images from specified url to path
-function downloadImageByURL(user){
-  url = user.avatar_url;
-  jpegPath = path + user.login + ".jpg";
+function downloadImageByURL(url, filePath){
   request(url)
     .on('error', function(err){
       throw err;
     })
-    .pipe(fs.createWriteStream(jpegPath));
+    .pipe(fs.createWriteStream(filePath));
+}
+
+// Path & URL Generator
+function PathURLGenerator(user){
+  url = user.avatar_url;
+  jpegPath = path + user.login + ".jpg";
+  downloadImageByURL(url, jpegPath);
 }
 
 // Provides urls for each user in github repo to downloadImageByURL function
@@ -69,7 +74,7 @@ function downloadEngine (err, response, body){
   }
   if (body["message"] !== "Not Found"){
     body.forEach(function (user){
-      downloadImageByURL(user);
+      PathURLGenerator(user);
     });
     console.log("Downloads completed into /" + path);
   } else {
