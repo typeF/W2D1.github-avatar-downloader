@@ -1,7 +1,7 @@
 var request = require('request');
 var fs = require('fs');
 var dotenv = require('dotenv').config();
-var path = "/avatars";
+var path = "avatars/";
 
 var gitHubOptions = {
     url: "https://api.github.com/repos/",
@@ -14,16 +14,15 @@ var gitHubOptions = {
 
 function downloadEngine (err, response, body){
   console.log('Welcome to the GitHub Avatar Downloader');
-
   if (err) {
   console.log("Errors:", err);
   }
 
   if (body["message"] !== "Not Found"){
     body.forEach(function (user){
-    downloadImageByURL(user.avatar_url, "avatars/" + user.login + ".jpg");
+    downloadImageByURL(user.avatar_url, path + user.login + ".jpg");
     });
-    console.log("Downloads completed into /avatars");
+    console.log("Downloads completed into /" + path);
   }
 
   else {
@@ -68,7 +67,11 @@ function errorCheck(owner, repo, extraArgument){
     console.log(".env token is not valid. Please check again.");
     return false;
   }
-
+  if (fs.existsSync("./" + path) === false){
+    console.log("--------ERROR--------")
+    console.log("Save folder " + path + " does not exist");
+    return false;
+  }
   else {
     return true;
   }
