@@ -37,5 +37,3 @@ function downloadImageByURL(url, filePath){
   })
   .pipe(fs.createWriteStream(filePath));
 }
-
-downloadImageByURL('https://avatars0.githubusercontent.com/u/1615?v=4', "avatars/test.jpg");
