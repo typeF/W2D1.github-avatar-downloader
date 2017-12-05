@@ -1,7 +1,6 @@
 var request = require('request');
 var fs = require('fs');
 var dotenv = require('dotenv').config();
-var GITHUB_TOKEN = require("./secrets.js");
 var owner = process.argv[2];
 var nameOfRepo = process.argv[3];
 
@@ -11,7 +10,6 @@ function getRepoContributors(repoOwner, repoName, callback) {
     json: true,
     headers: {
       'User-Agent': 'request',
-      // 'Authorization': 'token ' + GITHUB_TOKEN.token
       'Authorization': 'token ' + process.env.GITOKEN
     }
   };
