@@ -4,8 +4,6 @@ var GITHUB_TOKEN = require("./secrets.js");
 var owner = process.argv[2];
 var nameOfRepo = process.argv[3];
 
-console.log('Welcome to the GitHub Avatar Downloader');
-
 function getRepoContributors(repoOwner, repoName, callback) {
   var options = {
     url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
@@ -16,13 +14,16 @@ function getRepoContributors(repoOwner, repoName, callback) {
     }
   };
 
-  request(options, function(err, res, body) {
-    callback(err, body);
-  });
+  if (owner && nameOfRepo) {
+    console.log('Welcome to the GitHub Avatar Downloader');
+    request(options, function(err, res, body) {
+      callback(err, body);
+    });
+  } else{
+    console.log("ERROR. Owner and Repo name not provided");
+    console.log("Usage: node download_avatars.js <owner> <repo>");
+  }
 }
-
-var owner = process.argv[2];
-var nameOfRepo = process.argv[3];
 
 getRepoContributors(owner, nameOfRepo, function(err, result) {
   console.log("Errors:", err);
