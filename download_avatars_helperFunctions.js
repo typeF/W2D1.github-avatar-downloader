@@ -66,7 +66,7 @@ function PathURLGenerator(user){
   downloadImageByURL(url, jpegPath);
 }
 
-// Provides urls for each user in github repo to downloadImageByURL function
+// Provides provides individual JSON objects to Path & URL Generator function
 function downloadEngine (err, response, body){
   console.log('Welcome to the GitHub Avatar Downloader');
   if (err) {
